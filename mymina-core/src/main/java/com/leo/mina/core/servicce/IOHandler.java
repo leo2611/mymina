@@ -1,0 +1,11 @@
+package com.leo.mina.core.servicce;
+
+import com.leo.mina.core.session.IOSession;
+
+/**
+ * Created by leo.sz on 2015/7/8.
+ */
+public interface IOHandler {
+    void messageReceived(IOSession session, Object message);
+    void inputClosed(IOSession session) ;
+}
