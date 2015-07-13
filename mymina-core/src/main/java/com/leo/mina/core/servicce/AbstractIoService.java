@@ -1,7 +1,7 @@
 package com.leo.mina.core.servicce;
 
 import com.leo.mina.core.filter.IOFilterChain;
-import com.leo.mina.core.filter.IOFilterChainImpl;
+import com.leo.mina.core.filter.impl.IOFilterChainImpl;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -20,6 +20,7 @@ public class AbstractIoService implements IoService {
     protected Selector selector = null;
     protected IOprocessor [] iOprocessor ;
     protected IOFilterChain ioFilterChain;
+    protected IOHandler ioHandler;
     protected LinkedBlockingQueue<SelectionKey> linkedBlockingQueue = new LinkedBlockingQueue<SelectionKey>();
     public AbstractIoService(){
         ioFilterChain = new IOFilterChainImpl();
@@ -32,6 +33,15 @@ public class AbstractIoService implements IoService {
         }
 
     }
+
+    public IOHandler getIoHandler() {
+        return ioHandler;
+    }
+
+    public void setIoHandler(IOHandler ioHandler) {
+        this.ioHandler = ioHandler;
+    }
+
     public boolean isDisposing() {
         return false;
     }

@@ -3,7 +3,7 @@ package com.leo.mina.core.servicce.socket;
 import com.leo.mina.core.servicce.IOprocessor;
 import com.leo.mina.core.servicce.IoService;
 import com.leo.mina.core.session.IOSession;
-import com.leo.mina.core.session.SocketIOSession;
+import com.leo.mina.core.session.impl.SocketIOSession;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
                         sc.register(selector, SelectionKey.OP_WRITE);
                         keys.remove(selectionKey);
                         IOSession ioSession = new SocketIOSession(ioService, selectionKey);
-                        ioSession.processRead();
+                        ioSession.messageReceived();
                     } else if (selectionKey.isWritable()) {
                         ServerSocketChannel ssc = (ServerSocketChannel) selectionKey.channel();
                         SocketChannel sc = ssc.accept();
@@ -71,12 +71,12 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
                         sc.register(selector, SelectionKey.OP_READ);
                         keys.remove(selectionKey);
                         IOSession ioSession = new SocketIOSession(ioService, selectionKey);
-                        ioSession.procesWrite();
+                        ioSession.messageWrite();
                     }
 
                 }
             }catch (ClosedChannelException e){
-                logger.error("SocketIOProcessor 注册通道失败",e);
+                logger.error("SocketIOProcessor 注册关闭通道失败",e);
             }catch (IOException e){
                 logger.error("SocketIOProcessor 注册通道失败",e);
             }

@@ -8,6 +8,6 @@ public interface IOSession {
     public String read();
     public void process();
     public void messageReceived();
-    public void messageReceivedWrite();
+    public void messageWrite();
 
 }

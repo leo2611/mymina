@@ -1,8 +1,8 @@
-package com.leo.mina.core.filter;
+package com.leo.mina.core.filter.impl;
 
+import com.leo.mina.core.filter.IOFilter;
+import com.leo.mina.core.filter.IOFilterChain;
 import com.leo.mina.core.session.IOSession;
-
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by leo.sz on 2015/7/9.

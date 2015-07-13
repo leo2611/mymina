@@ -7,5 +7,6 @@ import com.leo.mina.core.session.IOSession;
  */
 public interface IOHandler {
     void messageReceived(IOSession session, Object message);
-    void inputClosed(IOSession session) ;
+    void messageWrite(IOSession session);
+
 }
