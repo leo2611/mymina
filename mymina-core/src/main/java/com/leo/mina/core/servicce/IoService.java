@@ -2,6 +2,9 @@ package com.leo.mina.core.servicce;
 
 import com.leo.mina.core.filter.IOFilterChain;
 
+import java.io.IOException;
+import java.net.SocketAddress;
+
 /**
  * Created by leo.sz on 2015/7/4.
  */
@@ -21,6 +24,7 @@ public interface IoService {
     IOFilterChain getIOFilterChain();
 //     void setIOFilterChain(IOFilterChainBuilder builder);
      boolean isActive();
+    public void bind(SocketAddress localAddress) throws IOException;
 //    IoSessionDataStructureFactory getSessionDataStructureFactory();
 //    void setSessionDataStructureFactory(IoSessionDataStructureFactory sessionDataStructureFactory);
 

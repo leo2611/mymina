@@ -4,6 +4,7 @@ import com.leo.mina.core.servicce.AbstractIoService;
 import com.leo.mina.core.servicce.IOprocessor;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -23,6 +24,15 @@ public class ServerSocketIoService extends AbstractIoService {
             iOprocessor[i] = new SocketIOProcessor(this);
         }
 
+    }
+
+    @Override
+    protected void bind0(SocketAddress localAddress) {
+        if (isDisposing()) {
+            throw new IllegalStateException("Already disposed.");
+        }
+        IOConnector ioConnector = new IOConnector((InetSocketAddress)localAddress);
+        executorService.execute(ioConnector);
     }
 
     private class IOConnector implements Runnable{
