@@ -46,7 +46,7 @@ public abstract class AbstractIoService implements IoService {
     }
 
     public boolean isDisposing() {
-        return false;
+        return activate;
     }
 
     public boolean isDisposed() {

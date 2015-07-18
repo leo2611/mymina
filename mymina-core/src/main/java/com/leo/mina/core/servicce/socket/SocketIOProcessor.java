@@ -1,5 +1,7 @@
 package com.leo.mina.core.servicce.socket;
 
+import com.leo.mina.core.biz.HandleRead;
+import com.leo.mina.core.biz.HandleWrite;
 import com.leo.mina.core.servicce.IOprocessor;
 import com.leo.mina.core.servicce.IoService;
 import com.leo.mina.core.session.IOSession;
@@ -9,6 +11,9 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.nio.channels.*;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -18,11 +23,12 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
     private Logger logger = Logger.getLogger(SocketIOProcessor.class);
     private IoService ioService;
     protected Selector selector = null;
-
+    protected ExecutorService executorService;
     protected LinkedBlockingQueue<SocketChannel> linkedBlockingQueue;
     public SocketIOProcessor(IoService ioService){
         this.linkedBlockingQueue = new LinkedBlockingQueue<SocketChannel>();
         this.ioService = ioService;
+        executorService = Executors.newCachedThreadPool();
         try {
             selector = Selector.open();
         }catch (IOException e){
@@ -60,10 +66,11 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
                         ServerSocketChannel ssc = (ServerSocketChannel) selectionKey.channel();
                         SocketChannel sc = ssc.accept();
                         sc.configureBlocking(false);
-                        sc.register(selector, SelectionKey.OP_WRITE);
+                        sc.register(selector, SelectionKey.OP_READ);
                         keys.remove(selectionKey);
                         IOSession ioSession = new SocketIOSession(ioService, selectionKey);
-                        ioSession.messageReceived();
+                        HandleRead handleRead = new HandleRead(ioSession);
+                        executorService.execute(handleRead);
                     } else if (selectionKey.isWritable()) {
                         ServerSocketChannel ssc = (ServerSocketChannel) selectionKey.channel();
                         SocketChannel sc = ssc.accept();
@@ -71,7 +78,8 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
                         sc.register(selector, SelectionKey.OP_READ);
                         keys.remove(selectionKey);
                         IOSession ioSession = new SocketIOSession(ioService, selectionKey);
-                        ioSession.messageWrite();
+                        HandleWrite handleWrite = new HandleWrite(ioSession);
+                        executorService.execute(handleWrite);
                     }
 
                 }

@@ -40,7 +40,7 @@ public class SocketNIOTest extends TestCase {
                         ServerSocketChannel ssc = (ServerSocketChannel)selectionKey.channel();
                         SocketChannel sc = ssc.accept();
                         sc.configureBlocking( false );
-                        sc.register(selector, SelectionKey.OP_WRITE|SelectionKey.OP_READ);
+                        sc.register(selector, SelectionKey.OP_READ);
                         keys.remove(selectionKey);
                     }
                     else if(selectionKey.isReadable()){
@@ -58,7 +58,7 @@ public class SocketNIOTest extends TestCase {
                             buf.clear();
                            // buf=ByteBuffer.wrap(sendString.getBytes("GBK"));
                             //socketChannel.write(buf);
-                            selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                            selectionKey.interestOps(SelectionKey.OP_READ );
                         }
                     }
 
