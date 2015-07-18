@@ -298,12 +298,12 @@ public class CachedIOBuffer extends IOBuffer {
 
     @Override
     public IOBuffer allocate(int capacity) {
-        return super.allocate(capacity);
+        return new CachedIOBuffer(capacity);
     }
 
     @Override
     public IOBuffer allocate() {
-        return super.allocate();
+        return new CachedIOBuffer(IOBuffer.capacity);
     }
 
 }
