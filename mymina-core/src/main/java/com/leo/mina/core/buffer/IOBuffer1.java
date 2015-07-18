@@ -7,7 +7,7 @@ import java.nio.charset.CharsetEncoder;
 /**
  * Created by leo.sz on 2015/7/4.
  */
-public abstract class IoBuffer {
+public abstract class IOBuffer1 {
     //private static IoBufferAllocator allocator = new SimpleBufferAllocator();
     private static boolean useDirectBuffer = false;
 
@@ -16,10 +16,10 @@ public abstract class IoBuffer {
     }
 
     public static void setUseDirectBuffer(boolean useDirectBuffer) {
-        IoBuffer.useDirectBuffer = useDirectBuffer;
+        IOBuffer1.useDirectBuffer = useDirectBuffer;
     }
 
-    public abstract IoBuffer putString(CharSequence val, CharsetEncoder encoder) throws CharacterCodingException;
+    public abstract IOBuffer1 putString(CharSequence val, CharsetEncoder encoder) throws CharacterCodingException;
     public abstract void free();
     public abstract ByteBuffer buf();
 //    public static void setAllocator(IoBufferAllocator newAllocator) {
@@ -35,7 +35,7 @@ public abstract class IoBuffer {
 //            oldAllocator.dispose();
 //        }
 //    }
-    public IoBuffer allocate(int capacity){
+    public IOBuffer1 allocate(int capacity){
         return null;
     }
 }
