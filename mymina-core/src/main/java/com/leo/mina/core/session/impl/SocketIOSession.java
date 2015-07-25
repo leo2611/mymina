@@ -2,7 +2,7 @@ package com.leo.mina.core.session.impl;
 
 import com.leo.mina.core.buffer.IOBuffer;
 import com.leo.mina.core.filter.IOFilterChain;
-import com.leo.mina.core.servicce.IOService1;
+import com.leo.mina.core.servicce.IOService;
 import com.leo.mina.core.session.IOSession;
 import org.apache.log4j.Logger;
 
@@ -18,12 +18,12 @@ import java.nio.charset.UnsupportedCharsetException;
  */
 public class SocketIOSession implements IOSession {
     private Logger logger = Logger.getLogger(SocketIOSession.class);
-    private IOService1 ioService1;
+    private IOService ioService;
     private IOBuffer ioBuffer;
     private SelectionKey selectionKey;
-    public SocketIOSession(IOService1 ioService1,SelectionKey selectionKey){
+    public SocketIOSession(IOService ioService,SelectionKey selectionKey){
         ioBuffer = IOBuffer.allocate();
-        this.ioService1 = ioService1;
+        this.ioService = ioService;
         this.selectionKey = selectionKey;
     }
 
@@ -39,7 +39,7 @@ public class SocketIOSession implements IOSession {
     }
 
     public void messageReceived() {
-        IOFilterChain ioFilterChain = ioService1.getIOFilterChain();
+        IOFilterChain ioFilterChain = ioService.getIOFilterChain();
         ioFilterChain.messageReceived(this);
         SocketChannel socketChannel = (SocketChannel)selectionKey.channel();
         String msg = null;
@@ -76,7 +76,7 @@ public class SocketIOSession implements IOSession {
         if(msg.trim().equalsIgnoreCase(""))
             return;
         ioBuffer.clear();
-        ioService1.getHandler().messageReceived(this,msg);
+        ioService.getHandler().messageReceived(this,msg);
 //        try {
 //            this.write("\r\n");
 //        }catch (CharacterCodingException e){
@@ -88,7 +88,7 @@ public class SocketIOSession implements IOSession {
     }
 
     public void messageWrite() {
-        ioService1.getIOFilterChain().messageWrited(this);
+        ioService.getIOFilterChain().messageWrited(this);
         selectionKey.attach(this);
         selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
     }

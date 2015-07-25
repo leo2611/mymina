@@ -2,7 +2,7 @@ package com.leo.mina.core.servicce.socket;
 
 import com.leo.mina.core.biz.HandelSession;
 import com.leo.mina.core.servicce.IOprocessor;
-import com.leo.mina.core.servicce.IOService1;
+import com.leo.mina.core.servicce.IOService;
 import com.leo.mina.core.session.IOSession;
 import com.leo.mina.core.session.impl.SocketIOSession;
 import org.apache.log4j.Logger;
@@ -20,13 +20,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class SocketIOProcessor implements IOprocessor,Runnable {
     private Logger logger = Logger.getLogger(SocketIOProcessor.class);
-    private IOService1 ioService1;
+    private IOService ioService;
     protected Selector selector = null;
     protected ExecutorService executorService;
     protected LinkedBlockingQueue<SocketChannel> linkedBlockingQueue;
-    public SocketIOProcessor(IOService1 ioService1){
+    public SocketIOProcessor(IOService ioService){
         this.linkedBlockingQueue = new LinkedBlockingQueue<SocketChannel>();
-        this.ioService1 = ioService1;
+        this.ioService = ioService;
         executorService = Executors.newCachedThreadPool();
         try {
             selector = Selector.open();
@@ -64,7 +64,7 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
                     if (selectionKey.isValid() && selectionKey.isReadable()) {
                         keys.remove(selectionKey);
                         selectionKey.interestOps(selectionKey.interestOps() & ~SelectionKey.OP_READ);
-                        IOSession ioSession = new SocketIOSession(ioService1, selectionKey);
+                        IOSession ioSession = new SocketIOSession(ioService, selectionKey);
                         HandelSession handelSession = new HandelSession(ioSession);
                         executorService.execute(handelSession);
                     } else if (selectionKey.isValid() && selectionKey.isWritable()) {

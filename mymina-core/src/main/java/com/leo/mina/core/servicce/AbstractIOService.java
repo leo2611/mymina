@@ -16,8 +16,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Created by leo.sz on 2015/7/7.
  */
-public abstract class AbstractIOService1 implements IOService1 {
-    private Logger logger = Logger.getLogger(AbstractIOService1.class);
+public abstract class AbstractIOService implements IOService {
+    private Logger logger = Logger.getLogger(AbstractIOService.class);
     protected ExecutorService executorService ;
     protected Selector selector = null;
     protected IOprocessor [] iOprocessor ;
@@ -25,7 +25,7 @@ public abstract class AbstractIOService1 implements IOService1 {
     protected IOHandler ioHandler;
     boolean activate = false;
     protected LinkedBlockingQueue<SelectionKey> linkedBlockingQueue = new LinkedBlockingQueue<SelectionKey>();
-    public AbstractIOService1(){
+    public AbstractIOService(){
         ioFilterChain = new IOFilterChainImpl();
         int coreNum = Runtime.getRuntime().availableProcessors();
         executorService = Executors.newFixedThreadPool(2*coreNum);

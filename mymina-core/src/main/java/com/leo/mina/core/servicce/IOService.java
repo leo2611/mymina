@@ -9,7 +9,7 @@ import java.net.SocketAddress;
 /**
  * Created by leo.sz on 2015/7/4.
  */
-public interface IOService1 {
+public interface IOService {
 
 //    void addListener(IoServiceListener listener);
 //    void removeListener(IoServiceListener listener);
