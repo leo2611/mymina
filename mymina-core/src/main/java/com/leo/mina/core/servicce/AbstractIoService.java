@@ -37,13 +37,7 @@ public abstract class AbstractIoService implements IoService {
 
     }
 
-    public IOHandler getIoHandler() {
-        return ioHandler;
-    }
 
-    public void setIoHandler(IOHandler ioHandler) {
-        this.ioHandler = ioHandler;
-    }
 
     public boolean isDisposing() {
         return activate;
@@ -62,7 +56,11 @@ public abstract class AbstractIoService implements IoService {
     }
 
     public IOHandler getHandler() {
-        return null;
+        return ioHandler;
+    }
+
+    public void setHandler(IOHandler ioHandler) {
+        this.ioHandler = ioHandler;
     }
 
     public IOFilterChain getIOFilterChain() {

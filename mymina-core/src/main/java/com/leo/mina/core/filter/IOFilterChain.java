@@ -12,4 +12,5 @@ public interface IOFilterChain {
     public void remove(String ioFilterName);
     public void replace(String ioFilterName,IOFilter ioFilter);
     public void messageReceived(IOSession ioSession);
+    public void messageWrited(IOSession ioSession);
 }

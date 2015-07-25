@@ -71,6 +71,10 @@ public class IOFilterChainImpl implements IOFilterChain {
         head.getSelf().messageReceived(head.getNext().getSelf(),ioSession);
     }
 
+    public void messageWrited(IOSession ioSession) {
+
+    }
+
     private class IOFilterNode {
         private IOFilterNode next;
         private IOFilterNode prev;

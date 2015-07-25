@@ -1,7 +1,10 @@
 package com.leo.mina.core.buffer;
 
+import org.apache.log4j.Logger;
+
 import java.nio.*;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 
@@ -9,9 +12,14 @@ import java.nio.charset.CharsetEncoder;
  * Created by leo.sz on 2015/7/18.
  */
 public class CachedIOBuffer extends IOBuffer {
+    private Logger logger = Logger.getLogger(CachedIOBuffer.class);
     private ByteBuffer buf;
+    private CharsetEncoder defaultCharsetEncoder;
+    private CharsetDecoder  defaultCharsetDecoder;
     public CachedIOBuffer(int capcity){
         buf = ByteBuffer.allocate(capcity);
+        defaultCharsetDecoder = Charset.forName("UTF-8").newDecoder();
+        defaultCharsetEncoder = Charset.forName("UTF-8").newEncoder();
     }
 
     @Override
@@ -70,12 +78,13 @@ public class CachedIOBuffer extends IOBuffer {
 
     @Override
     public IOBuffer clear() {
-        return null;
+        buf.clear();
+        return this;
     }
 
     @Override
     public IOBuffer flip() {
-        buf.clear();
+        buf.flip();
         return this;
     }
 
@@ -168,8 +177,8 @@ public class CachedIOBuffer extends IOBuffer {
 
     @Override
     public IOBuffer put(ByteBuffer src) {
-        if(buf.remaining() <= src.capacity()){
-            extend(src.capacity());
+        if(buf.remaining() <= src.limit()){
+            extend(src.limit());
         }
         buf.put(src);
         return this;
@@ -284,9 +293,37 @@ public class CachedIOBuffer extends IOBuffer {
     }
 
     @Override
+    public String getString() throws CharacterCodingException {
+        String ret = null;
+        try {
+            ret = defaultCharsetDecoder.decode(buf).toString();
+        }catch (CharacterCodingException e){
+            logger.error("cachedIObuffer调用默认uft-8 解码器 出错 ",e);
+            e.printStackTrace();
+            throw e;
+        }
+        return ret;
+    }
+
+    @Override
     public IOBuffer putString(CharSequence val, CharsetEncoder encoder) throws CharacterCodingException {
         CharBuffer charBuffer = CharBuffer.wrap(val);
         ByteBuffer byteBuffer = encoder.encode(charBuffer);
+        buf.put(byteBuffer);
+        return this;
+    }
+
+    @Override
+    public IOBuffer putString(CharSequence val) throws CharacterCodingException{
+        CharBuffer charBuffer = CharBuffer.wrap(val);
+        ByteBuffer byteBuffer = null;
+        try {
+            byteBuffer = defaultCharsetEncoder.encode(charBuffer);
+        }catch (CharacterCodingException e){
+            logger.error("cachedIObuffer调用默认uft-8 编码器 出错 ",e);
+            e.printStackTrace();
+            throw e;
+        }
         buf.put(byteBuffer);
         return this;
     }
@@ -296,14 +333,14 @@ public class CachedIOBuffer extends IOBuffer {
         return buf;
     }
 
-    @Override
-    public IOBuffer allocate(int capacity) {
-        return new CachedIOBuffer(capacity);
-    }
-
-    @Override
-    public IOBuffer allocate() {
-        return new CachedIOBuffer(IOBuffer.capacity);
-    }
+//    @Override
+//    public IOBuffer allocate(int capacity) {
+//        return new CachedIOBuffer(capacity);
+//    }
+//
+//    @Override
+//    public IOBuffer allocate() {
+//        return new CachedIOBuffer(IOBuffer.capacity);
+//    }
 
 }

@@ -1,5 +1,6 @@
 package com.leo.mina.core.servicce.socket;
 
+import com.leo.mina.core.biz.HandelSession;
 import com.leo.mina.core.biz.HandleRead;
 import com.leo.mina.core.biz.HandleWrite;
 import com.leo.mina.core.servicce.IOprocessor;
@@ -46,7 +47,7 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
 
             if((socketChannel = linkedBlockingQueue.poll()) != null){
                 try {
-                    socketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                    socketChannel.register(selector, SelectionKey.OP_READ );
                 }catch (ClosedChannelException e){
                     logger.error("SocketIOProcessor 注册通道失败",e);
                 }
@@ -62,24 +63,19 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
             try {
                 for (SelectionKey selectionKey : keys) {
 
-                    if (selectionKey.isReadable()) {
-                        ServerSocketChannel ssc = (ServerSocketChannel) selectionKey.channel();
-                        SocketChannel sc = ssc.accept();
-                        sc.configureBlocking(false);
+                    if (selectionKey.isValid() && selectionKey.isReadable()) {
+                        SocketChannel sc = (SocketChannel) selectionKey.channel();
                         sc.register(selector, SelectionKey.OP_READ);
                         keys.remove(selectionKey);
                         IOSession ioSession = new SocketIOSession(ioService, selectionKey);
-                        HandleRead handleRead = new HandleRead(ioSession);
-                        executorService.execute(handleRead);
-                    } else if (selectionKey.isWritable()) {
-                        ServerSocketChannel ssc = (ServerSocketChannel) selectionKey.channel();
-                        SocketChannel sc = ssc.accept();
-                        sc.configureBlocking(false);
+                        HandelSession handelSession = new HandelSession(ioSession);
+                        executorService.execute(handelSession);
+                    } else if (selectionKey.isValid() && selectionKey.isWritable()) {
+                        SocketChannel sc = (SocketChannel) selectionKey.channel();
+                        IOSession ioSession = (IOSession)selectionKey.attachment();
                         sc.register(selector, SelectionKey.OP_READ);
                         keys.remove(selectionKey);
-                        IOSession ioSession = new SocketIOSession(ioService, selectionKey);
-                        HandleWrite handleWrite = new HandleWrite(ioSession);
-                        executorService.execute(handleWrite);
+                        sc.write(ioSession.getIOBuffer().buf());
                     }
 
                 }

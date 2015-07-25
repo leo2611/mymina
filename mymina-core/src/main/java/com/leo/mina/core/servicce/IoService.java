@@ -17,6 +17,7 @@ public interface IoService {
     void dispose();
     void dispose(boolean awaitTermination);
     IOHandler getHandler();
+    void setHandler(IOHandler ioHandler);
 //    void setHandler(IOHandler handler);
 //    Map<Long, IoSession> getManagedSessions();
 //    int getManagedSessionCount();

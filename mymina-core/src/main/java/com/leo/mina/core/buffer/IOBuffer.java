@@ -140,14 +140,20 @@ public abstract class IOBuffer {
 
     public abstract String getString(CharsetDecoder decoder) throws CharacterCodingException ;
 
+    public abstract String getString() throws CharacterCodingException ;
 
     public abstract IOBuffer putString(CharSequence val, CharsetEncoder encoder) throws CharacterCodingException;
 
+    public abstract IOBuffer putString(CharSequence val) throws CharacterCodingException;
 
-    public abstract IOBuffer allocate(int capacity) ;
+    public static IOBuffer allocate(int capacity) {
+        return new CachedIOBuffer(capacity);
+    };
 
 
-    public abstract IOBuffer allocate() ;
+    public static IOBuffer allocate() {
+        return new CachedIOBuffer(IOBuffer.capacity);
+    };
 
 
 }
