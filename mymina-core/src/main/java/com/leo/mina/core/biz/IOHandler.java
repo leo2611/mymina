@@ -1,4 +1,4 @@
-package com.leo.mina.core.servicce;
+package com.leo.mina.core.biz;
 
 import com.leo.mina.core.session.IOSession;
 

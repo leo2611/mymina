@@ -1,8 +1,11 @@
 package com.leo.mina.core.servicce.socket;
 
+import com.leo.mina.core.biz.TestIOHanler;
 import com.leo.mina.core.servicce.AbstractIoService;
 import com.leo.mina.core.servicce.IOprocessor;
+import com.leo.mina.core.servicce.IoService;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
@@ -77,7 +80,18 @@ public class ServerSocketIoService extends AbstractIoService {
             通过算法 获取一个指定的ioprocess TODO 目前是随机获取 后期加上通过统计数字获得
          */
         public IOprocessor getIOprocessor(){
-            return iOprocessor[new Random().nextInt(10)+1];
+            return iOprocessor[new Random().nextInt(iOprocessor.length)];
         }
+    }
+    public static void main(String [] args){
+        IoService ioService = new ServerSocketIoService();
+        TestIOHanler testIOHanler = new TestIOHanler();
+        ioService.setHandler(testIOHanler);
+        try {
+            ioService.bind(new InetSocketAddress("127.0.0.1", 9928));
+        }catch (IOException e){
+            System.out.println("wrong");
+        }
+
     }
 }

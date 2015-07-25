@@ -1,5 +1,6 @@
 package com.leo.mina.core.filter;
 
+import com.leo.mina.core.filter.impl.IOFilterNode;
 import com.leo.mina.core.session.IOSession;
 
 /**
@@ -7,6 +8,6 @@ import com.leo.mina.core.session.IOSession;
  */
 public interface IOFilter {
     public void init();
-    public void messageReceived(IOFilter next,IOSession ioSession);
-    public void messageSent(IOFilter next,IOSession ioSession);
+    public void messageReceived(IOFilterNode next,IOSession ioSession);
+    public void messageSent(IOFilterNode next,IOSession ioSession);
 }

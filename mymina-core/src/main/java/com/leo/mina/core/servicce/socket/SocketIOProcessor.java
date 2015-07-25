@@ -10,6 +10,7 @@ import com.leo.mina.core.session.impl.SocketIOSession;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Set;
 import java.util.concurrent.Executor;
@@ -53,7 +54,7 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
                 }
             }
             try {
-                if (selector.selectNow() <= 0) {
+                if (selector.select(1000L) <= 0) {
                     continue;
                 }
             }catch(IOException e){
@@ -64,18 +65,22 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
                 for (SelectionKey selectionKey : keys) {
 
                     if (selectionKey.isValid() && selectionKey.isReadable()) {
-                        SocketChannel sc = (SocketChannel) selectionKey.channel();
-                        sc.register(selector, SelectionKey.OP_READ);
                         keys.remove(selectionKey);
+                        selectionKey.interestOps(selectionKey.interestOps() & ~SelectionKey.OP_READ);
                         IOSession ioSession = new SocketIOSession(ioService, selectionKey);
                         HandelSession handelSession = new HandelSession(ioSession);
                         executorService.execute(handelSession);
                     } else if (selectionKey.isValid() && selectionKey.isWritable()) {
                         SocketChannel sc = (SocketChannel) selectionKey.channel();
                         IOSession ioSession = (IOSession)selectionKey.attachment();
-                        sc.register(selector, SelectionKey.OP_READ);
+                        selectionKey.interestOps(selectionKey.interestOps() & ~SelectionKey.OP_WRITE | SelectionKey.OP_READ);
                         keys.remove(selectionKey);
-                        sc.write(ioSession.getIOBuffer().buf());
+                        ByteBuffer byteBuffer = ioSession.getIOBuffer().buf();
+                        byteBuffer.flip();
+                        while(byteBuffer.hasRemaining()){
+                            sc.write(byteBuffer);
+                        }
+
                     }
 
                 }

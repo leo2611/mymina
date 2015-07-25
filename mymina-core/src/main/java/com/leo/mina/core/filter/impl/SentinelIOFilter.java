@@ -7,7 +7,7 @@ import com.leo.mina.core.session.IOSession;
  * Created by leo.sz on 2015/7/9.
  */
 public class SentinelIOFilter implements IOFilter {
-    public void messageReceived(IOFilter next, IOSession ioSession) {
+    public void messageReceived(IOFilterNode next, IOSession ioSession) {
         return;
     }
 
@@ -15,7 +15,7 @@ public class SentinelIOFilter implements IOFilter {
 
     }
 
-    public void messageSent(IOFilter next, IOSession ioSession) {
+    public void messageSent(IOFilterNode next, IOSession ioSession) {
         return;
     }
 }

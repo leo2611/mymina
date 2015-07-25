@@ -18,8 +18,8 @@ public class CachedIOBuffer extends IOBuffer {
     private CharsetDecoder  defaultCharsetDecoder;
     public CachedIOBuffer(int capcity){
         buf = ByteBuffer.allocate(capcity);
-        defaultCharsetDecoder = Charset.forName("UTF-8").newDecoder();
-        defaultCharsetEncoder = Charset.forName("UTF-8").newEncoder();
+        defaultCharsetDecoder = Charset.forName("GBK").newDecoder();
+        defaultCharsetEncoder = Charset.forName("GBK").newEncoder();
     }
 
     @Override

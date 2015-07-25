@@ -68,49 +68,12 @@ public class IOFilterChainImpl implements IOFilterChain {
     }
 
     public void messageReceived(IOSession ioSession) {
-        head.getSelf().messageReceived(head.getNext().getSelf(),ioSession);
+        head.getSelf().messageReceived(head.getNext(),ioSession);
     }
 
     public void messageWrited(IOSession ioSession) {
 
     }
 
-    private class IOFilterNode {
-        private IOFilterNode next;
-        private IOFilterNode prev;
-        private IOFilter self;
-        private String IOFilterName;
 
-        public IOFilterNode getNext() {
-            return next;
-        }
-
-        public void setNext(IOFilterNode next) {
-            this.next = next;
-        }
-
-        public String getIOFilterName() {
-            return IOFilterName;
-        }
-
-        public void setIOFilterName(String IOFilterName) {
-            this.IOFilterName = IOFilterName;
-        }
-
-        public IOFilterNode getPrev() {
-            return prev;
-        }
-
-        public void setPrev(IOFilterNode prev) {
-            this.prev = prev;
-        }
-
-        public IOFilter getSelf() {
-            return self;
-        }
-
-        public void setSelf(IOFilter self) {
-            this.self = self;
-        }
-    }
 }

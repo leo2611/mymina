@@ -48,7 +48,7 @@ public class SocketIOSession implements IOSession {
         int readNum = 0 ;
         ioBuffer.clear();
         try {
-            while ((readNum = socketChannel.read(buf)) >= 0) {
+            while ((readNum = socketChannel.read(buf)) > 0) {
                 buf.flip();
                 ioBuffer.put(buf);
                 buf.clear();
@@ -74,8 +74,15 @@ public class SocketIOSession implements IOSession {
             logger.error("socketIosession调用iobuffer的getString方法获取字符串失败 解码器问题");
             return;
         }
+        if(msg.trim().equalsIgnoreCase(""))
+            return;
         ioBuffer.clear();
         ioService.getHandler().messageReceived(this,msg);
+//        try {
+//            this.write("\r\n");
+//        }catch (CharacterCodingException e){
+//            logger.error("socketIosession调用iobuffer的getString方法获取字符串失败 解码器问题");
+//        }
         if(ioBuffer.remaining() < ioBuffer.capacity()){
             messageWrite();
         }

@@ -1,5 +1,6 @@
 package com.leo.mina.core.servicce;
 
+import com.leo.mina.core.biz.IOHandler;
 import com.leo.mina.core.filter.IOFilterChain;
 import com.leo.mina.core.filter.impl.IOFilterChainImpl;
 import org.apache.log4j.Logger;
@@ -8,7 +9,6 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -28,7 +28,7 @@ public abstract class AbstractIoService implements IoService {
     public AbstractIoService(){
         ioFilterChain = new IOFilterChainImpl();
         int coreNum = Runtime.getRuntime().availableProcessors();
-        executorService = Executors.newFixedThreadPool(coreNum);
+        executorService = Executors.newFixedThreadPool(2*coreNum);
         try {
             selector = Selector.open();
         }catch (IOException e){
