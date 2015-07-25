@@ -2,7 +2,7 @@ package com.leo.mina.core.session.impl;
 
 import com.leo.mina.core.buffer.IOBuffer;
 import com.leo.mina.core.filter.IOFilterChain;
-import com.leo.mina.core.servicce.IoService;
+import com.leo.mina.core.servicce.IOService1;
 import com.leo.mina.core.session.IOSession;
 import org.apache.log4j.Logger;
 
@@ -11,7 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
 /**
@@ -19,12 +18,12 @@ import java.nio.charset.UnsupportedCharsetException;
  */
 public class SocketIOSession implements IOSession {
     private Logger logger = Logger.getLogger(SocketIOSession.class);
-    private IoService ioService;
+    private IOService1 ioService1;
     private IOBuffer ioBuffer;
     private SelectionKey selectionKey;
-    public SocketIOSession(IoService ioService,SelectionKey selectionKey){
+    public SocketIOSession(IOService1 ioService1,SelectionKey selectionKey){
         ioBuffer = IOBuffer.allocate();
-        this.ioService = ioService;
+        this.ioService1 = ioService1;
         this.selectionKey = selectionKey;
     }
 
@@ -40,7 +39,7 @@ public class SocketIOSession implements IOSession {
     }
 
     public void messageReceived() {
-        IOFilterChain ioFilterChain = ioService.getIOFilterChain();
+        IOFilterChain ioFilterChain = ioService1.getIOFilterChain();
         ioFilterChain.messageReceived(this);
         SocketChannel socketChannel = (SocketChannel)selectionKey.channel();
         String msg = null;
@@ -77,7 +76,7 @@ public class SocketIOSession implements IOSession {
         if(msg.trim().equalsIgnoreCase(""))
             return;
         ioBuffer.clear();
-        ioService.getHandler().messageReceived(this,msg);
+        ioService1.getHandler().messageReceived(this,msg);
 //        try {
 //            this.write("\r\n");
 //        }catch (CharacterCodingException e){
@@ -89,7 +88,7 @@ public class SocketIOSession implements IOSession {
     }
 
     public void messageWrite() {
-        ioService.getIOFilterChain().messageWrited(this);
+        ioService1.getIOFilterChain().messageWrited(this);
         selectionKey.attach(this);
         selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
     }

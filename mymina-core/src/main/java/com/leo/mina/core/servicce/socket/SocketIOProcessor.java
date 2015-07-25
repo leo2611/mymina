@@ -1,10 +1,8 @@
 package com.leo.mina.core.servicce.socket;
 
 import com.leo.mina.core.biz.HandelSession;
-import com.leo.mina.core.biz.HandleRead;
-import com.leo.mina.core.biz.HandleWrite;
 import com.leo.mina.core.servicce.IOprocessor;
-import com.leo.mina.core.servicce.IoService;
+import com.leo.mina.core.servicce.IOService1;
 import com.leo.mina.core.session.IOSession;
 import com.leo.mina.core.session.impl.SocketIOSession;
 import org.apache.log4j.Logger;
@@ -13,7 +11,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -23,13 +20,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class SocketIOProcessor implements IOprocessor,Runnable {
     private Logger logger = Logger.getLogger(SocketIOProcessor.class);
-    private IoService ioService;
+    private IOService1 ioService1;
     protected Selector selector = null;
     protected ExecutorService executorService;
     protected LinkedBlockingQueue<SocketChannel> linkedBlockingQueue;
-    public SocketIOProcessor(IoService ioService){
+    public SocketIOProcessor(IOService1 ioService1){
         this.linkedBlockingQueue = new LinkedBlockingQueue<SocketChannel>();
-        this.ioService = ioService;
+        this.ioService1 = ioService1;
         executorService = Executors.newCachedThreadPool();
         try {
             selector = Selector.open();
@@ -67,7 +64,7 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
                     if (selectionKey.isValid() && selectionKey.isReadable()) {
                         keys.remove(selectionKey);
                         selectionKey.interestOps(selectionKey.interestOps() & ~SelectionKey.OP_READ);
-                        IOSession ioSession = new SocketIOSession(ioService, selectionKey);
+                        IOSession ioSession = new SocketIOSession(ioService1, selectionKey);
                         HandelSession handelSession = new HandelSession(ioSession);
                         executorService.execute(handelSession);
                     } else if (selectionKey.isValid() && selectionKey.isWritable()) {

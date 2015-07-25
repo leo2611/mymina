@@ -1,9 +1,9 @@
 package com.leo.mina.core.servicce.socket;
 
 import com.leo.mina.core.biz.TestIOHanler;
-import com.leo.mina.core.servicce.AbstractIoService;
+import com.leo.mina.core.servicce.AbstractIOService1;
 import com.leo.mina.core.servicce.IOprocessor;
-import com.leo.mina.core.servicce.IoService;
+import com.leo.mina.core.servicce.IOService1;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,9 +17,9 @@ import java.util.Set;
 /**
  * Created by leo.sz on 2015/7/7.
  */
-public class ServerSocketIoService extends AbstractIoService {
+public class ServerSocketIOService1 extends AbstractIOService1 {
 
-    public ServerSocketIoService(){
+    public ServerSocketIOService1(){
         super();
         int coreNum = Runtime.getRuntime().availableProcessors();
         iOprocessor = new SocketIOProcessor[coreNum];
@@ -84,11 +84,11 @@ public class ServerSocketIoService extends AbstractIoService {
         }
     }
     public static void main(String [] args){
-        IoService ioService = new ServerSocketIoService();
+        IOService1 ioService1 = new ServerSocketIOService1();
         TestIOHanler testIOHanler = new TestIOHanler();
-        ioService.setHandler(testIOHanler);
+        ioService1.setHandler(testIOHanler);
         try {
-            ioService.bind(new InetSocketAddress("127.0.0.1", 9928));
+            ioService1.bind(new InetSocketAddress("127.0.0.1", 9928));
         }catch (IOException e){
             System.out.println("wrong");
         }
