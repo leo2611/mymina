@@ -21,12 +21,12 @@ public class IOFilterNode {
 
         }
 
-        public void messageReceived(IOSession ioSession) {
-            self.messageReceived(prev,ioSession);
+        public void messageReceived(IOSession ioSession,Object msg) {
+            self.messageReceived(prev,ioSession,msg);
         }
 
-        public void messageSent( IOSession ioSession) {
-            self.messageSent(prev,ioSession);
+        public void messageSent( IOSession ioSession,Object msg) {
+            self.messageSent(prev,ioSession,msg);
         }
 
         public IOFilterNode getNext() {

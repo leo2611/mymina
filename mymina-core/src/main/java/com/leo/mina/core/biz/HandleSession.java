@@ -5,9 +5,9 @@ import com.leo.mina.core.session.IOSession;
 /**
  * Created by leo.sz on 2015/7/25.
  */
-public class HandelSession implements Runnable {
+public class HandleSession implements Runnable {
     private IOSession ioSession;
-    public HandelSession(IOSession ioSession){
+    public HandleSession(IOSession ioSession){
         this.ioSession = ioSession;
     }
     public IOSession getIoSession() {

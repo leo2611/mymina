@@ -8,6 +8,6 @@ import com.leo.mina.core.session.IOSession;
  */
 public interface IOFilter {
     public void init();
-    public void messageReceived(IOFilterNode next,IOSession ioSession);
-    public void messageSent(IOFilterNode next,IOSession ioSession);
+    public void messageReceived(IOFilterNode next,IOSession ioSession,Object msg );
+    public void messageSent(IOFilterNode next,IOSession ioSession,Object msg);
 }

@@ -11,6 +11,6 @@ public interface IOFilterChain {
     public void removeLast();
     public void remove(String ioFilterName);
     public void replace(String ioFilterName,IOFilter ioFilter);
-    public void messageReceived(IOSession ioSession);
-    public void messageWrited(IOSession ioSession);
+    public void messageReceived(IOSession ioSession,Object msg);
+    public void messageWrited(IOSession ioSession,Object msg);
 }

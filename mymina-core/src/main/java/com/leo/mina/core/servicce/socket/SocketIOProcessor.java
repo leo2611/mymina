@@ -1,6 +1,6 @@
 package com.leo.mina.core.servicce.socket;
 
-import com.leo.mina.core.biz.HandelSession;
+import com.leo.mina.core.biz.HandleSession;
 import com.leo.mina.core.servicce.IOprocessor;
 import com.leo.mina.core.servicce.IOService;
 import com.leo.mina.core.session.IOSession;
@@ -45,7 +45,11 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
 
             if((socketChannel = linkedBlockingQueue.poll()) != null){
                 try {
-                    socketChannel.register(selector, SelectionKey.OP_READ );
+                    SelectionKey selectionKey = socketChannel.register(selector, SelectionKey.OP_READ );
+                    IOSession ioSession = new SocketIOSession(ioService, selectionKey);
+                    HandleSession handelSession = new HandleSession(ioSession);
+                    selectionKey.attach(ioSession);
+                    ioSession.setHandelSession(handelSession);
                 }catch (ClosedChannelException e){
                     logger.error("SocketIOProcessor 注册通道失败",e);
                 }
@@ -64,9 +68,11 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
                     if (selectionKey.isValid() && selectionKey.isReadable()) {
                         keys.remove(selectionKey);
                         selectionKey.interestOps(selectionKey.interestOps() & ~SelectionKey.OP_READ);
-                        IOSession ioSession = new SocketIOSession(ioService, selectionKey);
-                        HandelSession handelSession = new HandelSession(ioSession);
-                        executorService.execute(handelSession);
+//                        IOSession ioSession = new SocketIOSession(ioService, selectionKey);
+//                        HandleSession handelSession = new HandleSession(ioSession);
+//                        ioSession.setHandelSession(handelSession);
+                        IOSession ioSession = (IOSession)selectionKey.attachment();
+                        executorService.execute(ioSession.getHandelSession());
                     } else if (selectionKey.isValid() && selectionKey.isWritable()) {
                         SocketChannel sc = (SocketChannel) selectionKey.channel();
                         IOSession ioSession = (IOSession)selectionKey.attachment();

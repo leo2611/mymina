@@ -67,11 +67,11 @@ public class IOFilterChainImpl implements IOFilterChain {
         }
     }
 
-    public void messageReceived(IOSession ioSession) {
-        head.getSelf().messageReceived(head.getNext(),ioSession);
+    public void messageReceived(IOSession ioSession,Object msg) {
+        head.getSelf().messageReceived(head.getNext(),ioSession,msg);
     }
 
-    public void messageWrited(IOSession ioSession) {
+    public void messageWrited(IOSession ioSession,Object msg) {
 
     }
 

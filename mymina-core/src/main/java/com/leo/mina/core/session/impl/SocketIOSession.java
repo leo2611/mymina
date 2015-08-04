@@ -1,5 +1,6 @@
 package com.leo.mina.core.session.impl;
 
+import com.leo.mina.core.biz.HandleSession;
 import com.leo.mina.core.buffer.IOBuffer;
 import com.leo.mina.core.filter.IOFilterChain;
 import com.leo.mina.core.servicce.IOService;
@@ -11,24 +12,37 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.CharacterCodingException;
-import java.nio.charset.UnsupportedCharsetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by leo.sz on 2015/7/8. TODO write method
  */
 public class SocketIOSession implements IOSession {
+    private ConcurrentHashMap<Object, Object> attributes = new ConcurrentHashMap<Object, Object>();
     private Logger logger = Logger.getLogger(SocketIOSession.class);
     private IOService ioService;
     private IOBuffer ioBuffer;
+    private HandleSession handelSession;
     private SelectionKey selectionKey;
+    private List writeFuture = new ArrayList();
     public SocketIOSession(IOService ioService,SelectionKey selectionKey){
         ioBuffer = IOBuffer.allocate();
         this.ioService = ioService;
         this.selectionKey = selectionKey;
     }
 
+    public HandleSession getHandelSession() {
+        return handelSession;
+    }
+
+    public void setHandelSession(HandleSession handelSession) {
+        this.handelSession = handelSession;
+    }
+
     public void write(String msg) throws CharacterCodingException {
-        ioBuffer.putString(msg);
+        writeFuture.add(msg);
     }
     public String read(){
         return "test";
@@ -38,11 +52,18 @@ public class SocketIOSession implements IOSession {
 
     }
 
+    public Object getAttribute(Object key) {
+        return attributes.get(key);
+    }
+
+    public void setAttribute(Object key, Object val) {
+        attributes.put(key,val);
+    }
+
     public void messageReceived() {
-        IOFilterChain ioFilterChain = ioService.getIOFilterChain();
-        ioFilterChain.messageReceived(this);
+
         SocketChannel socketChannel = (SocketChannel)selectionKey.channel();
-        String msg = null;
+        byte [] msg = null;
         ByteBuffer buf = ByteBuffer.allocate(2048);
         int readNum = 0 ;
         ioBuffer.clear();
@@ -54,46 +75,51 @@ public class SocketIOSession implements IOSession {
             }
         } catch (IOException e) {
             logger.error("读取通道失败", e);
-        } catch (UnsupportedCharsetException e) {
-            logger.error("字符转换失败", e);
         }
         if (readNum == -1) {
             try {
                 socketChannel.close();
             }catch (IOException e) {
-                logger.error("读取通道失败", e);
+                logger.error("读取通道失败 通道关闭", e);
             }
             return;
         }
         ioBuffer.flip();
-        try{
-        msg = ioBuffer.getString();
-        }
-        catch (CharacterCodingException e){
-            logger.error("socketIosession调用iobuffer的getString方法获取字符串失败 解码器问题");
+        msg = ioBuffer.array();
+        if(msg.length <= 0)
             return;
-        }
-        if(msg.trim().equalsIgnoreCase(""))
-            return;
-        ioBuffer.clear();
-        ioService.getHandler().messageReceived(this,msg);
+        IOFilterChain ioFilterChain = ioService.getIOFilterChain();
+        ioFilterChain.messageReceived(this, msg);
 //        try {
 //            this.write("\r\n");
 //        }catch (CharacterCodingException e){
 //            logger.error("socketIosession调用iobuffer的getString方法获取字符串失败 解码器问题");
 //        }
-        if(ioBuffer.remaining() < ioBuffer.capacity()){
+        if( writeFuture.size() >0){
             messageWrite();
         }
     }
 
     public void messageWrite() {
-        ioService.getIOFilterChain().messageWrited(this);
-        selectionKey.attach(this);
-        selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+       for(Object msg : writeFuture) {
+           ioService.getIOFilterChain().messageWrited(this, msg);
+       }
+        if(ioBuffer.remaining() < ioBuffer.capacity()){
+            selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
+        }
+
     }
 
     public IOBuffer getIOBuffer() {
         return ioBuffer;
     }
+
+    public IOService getIOService() {
+        return ioService;
+    }
+
+    public SelectionKey getSelectionKey() {
+        return selectionKey;
+    }
+
 }
