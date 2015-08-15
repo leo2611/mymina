@@ -1,9 +1,11 @@
 package com.leo.mina.core.filter.code.impl;
 
+import com.leo.mina.core.buffer.IOBuffer;
 import com.leo.mina.core.filter.code.ProtocolDecodeInPut;
 import com.leo.mina.core.filter.impl.IOFilterNode;
 import com.leo.mina.core.session.IOSession;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
  */
 public class ProtocolDecodeInPutImpl implements ProtocolDecodeInPut {
     private List list = new ArrayList();
+    private ByteBuffer byteBuffer;
     public void write(Object message) {
         list.add(message);
     }
@@ -23,5 +26,11 @@ public class ProtocolDecodeInPutImpl implements ProtocolDecodeInPut {
         }
     }
 
+    public ByteBuffer getByteBuffer() {
+        return byteBuffer;
+    }
 
+    public void setByteBuffer(ByteBuffer byteBuffer) {
+        this.byteBuffer = byteBuffer;
+    }
 }

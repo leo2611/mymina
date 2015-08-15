@@ -4,21 +4,27 @@ import com.leo.mina.core.biz.TestIOHanler;
 import com.leo.mina.core.servicce.AbstractIOService;
 import com.leo.mina.core.servicce.IOprocessor;
 import com.leo.mina.core.servicce.IOService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.SocketException;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Random;
 import java.util.Set;
 
+
 /**
  * Created by leo.sz on 2015/7/7.
  */
 public class ServerSocketIOService extends AbstractIOService {
-
+    public static final Logger logger = LoggerFactory.getLogger(ServerSocketIOService.class);
     public ServerSocketIOService(){
         super();
         int coreNum = Runtime.getRuntime().availableProcessors();
@@ -52,29 +58,42 @@ public class ServerSocketIOService extends AbstractIOService {
 
                 ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
                 serverSocketChannel.configureBlocking(false);
-                serverSocketChannel.socket().setReuseAddress(true);
                 serverSocketChannel.socket().bind(inetSocketAddress);
                 serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-                while(!Thread.currentThread().isInterrupted()){
-                    if(selector.selectNow() <= 0){
-                        continue;
-                    }
-                    Set<SelectionKey> keys = selector.selectedKeys();
-                    for(SelectionKey selectionKey : keys){
-
-                        if(selectionKey.isAcceptable()){
-                            ServerSocketChannel ssc = (ServerSocketChannel)selectionKey.channel();
-                            SocketChannel sc = ssc.accept();
-                            sc.configureBlocking(false);
-                            getIOprocessor().register(sc);
-                            keys.remove(selectionKey);
+            }catch (ClosedChannelException e){
+                logger.error("IOConnector invoke nio error ");
+            }catch (IOException e){
+                logger.error("IOConnector invoke configureBlocking or bind error ",e);
+            }
+                while(activate){
+                    try {
+                        if (selector.selectNow() <= 0) {
+                            continue;
                         }
+                     } catch (Exception e) {
 
+                        logger.error("IOConnector invoke selector.selectNow error",e);
+
+                    }
+                    try {
+
+                        Set<SelectionKey> keys = selector.selectedKeys();
+                        for (SelectionKey selectionKey : keys) {
+
+                            if (selectionKey.isAcceptable()) {
+                                ServerSocketChannel ssc = (ServerSocketChannel) selectionKey.channel();
+                                SocketChannel sc = ssc.accept();
+                                sc.configureBlocking(false);
+                                getIOprocessor().register(sc);
+                                keys.remove(selectionKey);
+                            }
+
+                        }
+                    }catch (IOException e){
+                        logger.error("IOConnector invoke ssc.accept or sc.configureBlocking(false)  error  ",e);
                     }
                 }
-            }catch (Exception e){
-                System.out.print("出错 哦！！！.");
-            }
+
         }
         /*
             通过算法 获取一个指定的ioprocess TODO 目前是随机获取 后期加上通过统计数字获得

@@ -16,7 +16,6 @@ public interface IOService {
     boolean isDisposing();
     boolean isDisposed();
     void dispose();
-    void dispose(boolean awaitTermination);
     IOHandler getHandler();
     void setHandler(IOHandler ioHandler);
 //    void setHandler(IOHandler handler);

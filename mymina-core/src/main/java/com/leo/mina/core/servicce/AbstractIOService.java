@@ -23,9 +23,11 @@ public abstract class AbstractIOService implements IOService {
     protected IOprocessor [] iOprocessor ;
     protected IOFilterChain ioFilterChain;
     protected IOHandler ioHandler;
-    boolean activate = false;
+    protected volatile boolean activate ;
+
     protected LinkedBlockingQueue<SelectionKey> linkedBlockingQueue = new LinkedBlockingQueue<SelectionKey>();
     public AbstractIOService(){
+        activate = true;
         ioFilterChain = new IOFilterChainImpl();
         int coreNum = Runtime.getRuntime().availableProcessors();
         executorService = Executors.newFixedThreadPool(2*coreNum);
@@ -44,16 +46,14 @@ public abstract class AbstractIOService implements IOService {
     }
 
     public boolean isDisposed() {
-        return false;
+        return activate;
     }
 
     public void dispose() {
-
+        activate = false;
     }
 
-    public void dispose(boolean awaitTermination) {
 
-    }
 
     public IOHandler getHandler() {
         return ioHandler;
@@ -68,7 +68,7 @@ public abstract class AbstractIOService implements IOService {
     }
 
     public boolean isActive() {
-        return false;
+        return activate;
     }
 
     public void bind(SocketAddress localAddress)throws IOException  {
@@ -78,6 +78,7 @@ public abstract class AbstractIOService implements IOService {
         bind0(localAddress);
 
     }
+
     protected abstract void bind0(SocketAddress localAddress);
 }
 
