@@ -74,18 +74,17 @@ public class SocketIOProcessor implements IOprocessor,Runnable {
                         IOSession ioSession = (IOSession)selectionKey.attachment();
                         executorService.execute(ioSession.getHandelSession());
                     } else if (selectionKey.isValid() && selectionKey.isWritable()) {
+                        selectionKey.interestOps(selectionKey.interestOps() & ~SelectionKey.OP_WRITE);
                         SocketChannel sc = (SocketChannel) selectionKey.channel();
                         IOSession ioSession = (IOSession)selectionKey.attachment();
-                        selectionKey.interestOps(selectionKey.interestOps() & ~SelectionKey.OP_WRITE | SelectionKey.OP_READ);
                         keys.remove(selectionKey);
                         ByteBuffer byteBuffer = ioSession.getIOBuffer().buf();
                         byteBuffer.flip();
                         while(byteBuffer.hasRemaining()){
                             sc.write(byteBuffer);
                         }
-
+                        selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_READ);
                     }
-
                 }
             }catch (ClosedChannelException e){
                 logger.error("SocketIOProcessor 注册关闭通道失败",e);

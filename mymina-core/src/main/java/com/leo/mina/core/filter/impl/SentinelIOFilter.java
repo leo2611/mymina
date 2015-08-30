@@ -23,7 +23,6 @@ public class SentinelIOFilter implements IOFilter {
     public void messageSent(IOFilterNode next, IOSession ioSession,Object msg) {
         SelectionKey selectionKey = ioSession.getSelectionKey();
         IOBuffer ioBuffer = ioSession.getIOBuffer();
-        ioBuffer.clear();
         byte [] bytes = (byte [])msg;
         ioBuffer.put(bytes);
     }

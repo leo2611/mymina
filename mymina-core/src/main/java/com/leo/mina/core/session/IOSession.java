@@ -23,5 +23,6 @@ public interface IOSession {
     public void setHandelSession(HandleSession handelSession);
     public Object getAttribute(Object key);
     public void setAttribute(Object key,Object val);
+    public void setRemainingData(Object data);
 
 }

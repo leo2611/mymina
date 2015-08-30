@@ -5,7 +5,8 @@ import com.leo.mina.core.buffer.IOBuffer;
 import com.leo.mina.core.filter.IOFilterChain;
 import com.leo.mina.core.servicce.IOService;
 import com.leo.mina.core.session.IOSession;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SocketIOSession implements IOSession {
     private ConcurrentHashMap<Object, Object> attributes = new ConcurrentHashMap<Object, Object>();
-    private Logger logger = Logger.getLogger(SocketIOSession.class);
+    private Logger logger = LoggerFactory.getLogger(SocketIOSession.class);
     private IOService ioService;
     private IOBuffer ioBuffer;
     private HandleSession handelSession;
@@ -101,10 +102,11 @@ public class SocketIOSession implements IOSession {
     }
 
     public void messageWrite() {
-       for(Object msg : writeFuture) {
-           ioService.getIOFilterChain().messageWrited(this, msg);
-       }
-        if(ioBuffer.remaining() < ioBuffer.capacity()){
+        ioBuffer.clear();
+        for (Object msg : writeFuture) {
+            ioService.getIOFilterChain().messageWrited(this, msg);
+        }
+        if (ioBuffer.remaining() < ioBuffer.capacity()) {
             selectionKey.interestOps(selectionKey.interestOps() | SelectionKey.OP_WRITE);
         }
 
@@ -122,4 +124,10 @@ public class SocketIOSession implements IOSession {
         return selectionKey;
     }
 
+    public void setRemainingData(Object data) {
+        if(attributes.containsKey("remainingData")){
+            attributes.remove("remainingData");
+        }
+        attributes.put("remainingData",data);
+    }
 }
